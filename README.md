@@ -1,6 +1,9 @@
 ## What is this about: Write, test, launch and deploy serverless code and infrastructure
 
-AWS serverless application development and continuous integration/deployment(Uses NodeJs, but not tied to any specific language)
+AWS serverless application development and continuous integration/deployment
+
+- Not about specific language or platform
+- Not about what are Lambdas and AWS Api Gateways themselves
 
 Topics:
 - Development with AWS SAM
@@ -17,14 +20,15 @@ To create a serverless application using SAM, first, we'll need to create a SAM 
 
 SAM templates looks and feels similar to cloudformation templates (actually transforms to a cloudformation template) but simplifies and abstracts the management of serverless resources as illustrated here:
 ![A SAM template](https://image.slidesharecdn.com/3-170603004817/95/building-aws-lambda-applications-with-the-aws-serverless-application-model-aws-sam-june-2017-aws-online-tech-talks-16-638.jpg?cb=1496451007 "A SAM template")
+![SAM template resources](https://image.slidesharecdn.com/srv311-authoring-and-deploying-8533218c-51bf-4889-8f9e-6a3f52380159-1404412007-171213232428/95/authoring-and-deploying-serverless-applications-with-aws-sam-srv311-reinvent-2017-17-638.jpg?cb=1513207484, "SAM template resources")
 
 We then test, upload, and deploy application using the [AWS SAM CLI](https://github.com/awslabs/serverless-application-model).
-SAM CLI is an open source tool for managing Serverless applications written with AWS Serverless Application Model which provides an environment for us to develop, test, and analyze your serverless applications locally before uploading them to the Lambda runtime.
+SAM CLI is an open source tool for managing Serverless applications written with AWS Serverless Application Model which provides an environment for us to develop, test, and analyze our serverless applications locally before uploading them to the Lambda runtime.
 
 Resources:
-[AWS re:Invent 2017 Authoring and Deploying Serverless Applications with AWS SAM ](https://www.youtube.com/watch?v=pMyniSCOJdA)
-[AWS re:Invent 2017: Local Serverless Development using SAM Local ](https://www.youtube.com/watch?v=oGawhLx3Dxo)
-[AWS SAM CLI](https://github.com/awslabs/aws-sam-cli)
+- [AWS re:Invent 2017 Authoring and Deploying Serverless Applications with AWS SAM ](https://www.youtube.com/watch?v=pMyniSCOJdA)
+- [AWS re:Invent 2017: Local Serverless Development using SAM Local ](https://www.youtube.com/watch?v=oGawhLx3Dxo)
+- [AWS SAM CLI](https://github.com/awslabs/aws-sam-cli)
 
 ## Getting Started
 
@@ -42,8 +46,8 @@ This generates a fully functional project in `apples` folder along with a sample
 `sam local start-api` is the command to get a local server up. This is an ideal way to test our lambda function because it actually mimics the AWS behavior. Behind the scenes, it creates a local HTTP server hosting all of our Lambda functions defined by `template.yaml`. When accessed by using a browser or the CLI, a Docker container is launched on-demand locally to invoke the function.
 
 Resources:
-[SAM Template Doc](https://docs.aws.amazon.com/lambda/latest/dg/serverless_app.html)
-[More on Testing and Invoking](https://docs.aws.amazon.com/lambda/latest/dg/test-sam-cli.html)
+- [SAM Template Doc](https://docs.aws.amazon.com/lambda/latest/dg/serverless_app.html)
+- [More on Testing and Invoking](https://docs.aws.amazon.com/lambda/latest/dg/test-sam-cli.html)
 
 ## Code Organization
 
@@ -73,3 +77,31 @@ A sample Makefile
   lint:
     echo 'Will run lint'
 ```
+
+## Deploy
+
+A basic deploy happens in two steps: packaging, uploading sam template to s3 and deploying with AWS Cloudformation. Of course we can use AWS console but that's not a desired flow. The AWS CLI provides us with all the necessary commands that automate all these steps. Although, later we would like deploy to be handled by AWS Codepipeline, it is always good to know what happens in the inside.
+
+We will need to create an S3 bucket for AWS Cloudformation to use to upload our deployment package (Cloudformation itself is a different topic and will not be covered here).
+
+S3 bucket can be quickly created by:
+
+```bash
+  $ aws s3 mb s3://bucket-name
+```
+
+```bash
+  $ aws cloudformation package --template-file template.yaml --s3-bucket lambda-deploy-pkgs --output-template-file template-out.yaml --profile aws-profile
+
+```
+
+This transforms and creates a template named `template-out.yaml` that contains the CodeUri that points to the deployment zip in the Amazon S3 bucket that we specified and this template represents our serverless application. We are now ready to deploy it.
+
+```bash
+  $ aws cloudformation deploy --template-file template-out.yaml --stack-name SAMApples --capabilities CAPABILITY_IAM --profile aws-profile
+
+```
+This wil deploy the packaged template to a stack named `SAMApples`. Under the hood it creates and executes a changeset and waits until the deployment completes. `--capabilities` parameter is required to explicitly acknowledge that AWS CloudFormation is allowed to create roles on our behalf.
+
+Once deployed, you can investigate on all the resources it created for our application. See output section of the stack to test the endpoint.
+
