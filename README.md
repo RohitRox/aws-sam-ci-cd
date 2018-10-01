@@ -45,6 +45,9 @@ This generates a fully functional project in `apples` folder along with a sample
 
 `sam local start-api` is the command to get a local server up. This is an ideal way to test our lambda function because it actually mimics the AWS behavior. Behind the scenes, it creates a local HTTP server hosting all of our Lambda functions defined by `template.yaml`. When accessed by using a browser or the CLI, a Docker container is launched on-demand locally to invoke the function.
 
+The template can be validated using `sam validate -t path/to/template.yaml`.
+There are excellent plugins available for vscode and sublime text for catching template bugs.
+
 Resources:
 - [SAM Template Doc](https://docs.aws.amazon.com/lambda/latest/dg/serverless_app.html)
 - [More on Testing and Invoking](https://docs.aws.amazon.com/lambda/latest/dg/test-sam-cli.html)
@@ -105,3 +108,14 @@ This wil deploy the packaged template to a stack named `SAMApples`. Under the ho
 
 Once deployed, you can investigate on all the resources it created for our application. See output section of the stack to test the endpoint.
 
+UPDATE:
+
+SAM CLI now comes with commands for deployment as well.
+
+```
+  $ sam package --template-file template.yaml --s3-bucket mybucket --output-template-file template-out.yaml
+  $ sam deploy --template-file ./template-out.yaml --stack-name mystack --capabilities CAPABILITY_IAM
+  $ sam logs -n MyFunction --stack-name mystack # fetch logs using the function's LogicalID
+```
+
+[Full Doc](https://docs.aws.amazon.com/lambda/latest/dg/test-sam-cli.html)
