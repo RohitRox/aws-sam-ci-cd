@@ -119,3 +119,20 @@ SAM CLI now comes with commands for deployment as well.
 ```
 
 [Full Doc](https://docs.aws.amazon.com/lambda/latest/dg/test-sam-cli.html)
+
+## API Gateway And Swagger/ OpenAPI Specification
+
+The earlier sample example works just fine, it automatically creates an API Gateway for us, but for a real world application we might want to have granular control over API Gateway configurations and validations, or have multiple gateways. If you noted in earlier example, SAM automatically creates a default stage named 'Prod', perhaps we want to have multiple stages and control deployment behaviour. Or perhaps we would like to do API Design First approach. In all cases, we can design an api gateway `AWS::Serverless::Api` with OpenAPI Specification.
+
+What might happen in an API Gateway
+
+![API Gateway internals](https://cloudonaut.io/images/2015/11/API-Gateway-Internals.png "API Gateway internals")
+
+We can use OpenAPI Specification formerly known as Swagger Specification to define the API and API Gateway in combination with Lambda to implement the API.
+
+We can design our development flow to use swagger to document our API and also use the same definitions for SAM template. The cool thing about this is that the API definition can be used by the server that implements the API and the clients that use the API.
+
+Resource:
+- [About Swagger/ OpenAPI Specification](https://swagger.io/docs/specification/about/)
+
+
