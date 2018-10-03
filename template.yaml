@@ -4,6 +4,14 @@ Transform: AWS::Serverless-2016-10-31
 Description: Sample SAM Template
 
 Resources:
+  ApplesApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: live
+      DefinitionUri: ./swagger.yaml
+      Variables:
+        ListApplesFunction: !Ref ListApples
+
   ListApples:
     Type: AWS::Serverless::Function
     Properties:
@@ -16,14 +24,15 @@ Resources:
         ListApples:
           Type: Api
           Properties:
+            RestApiId: !Ref ApplesApiGateway
             Path: /apples
             Method: get
 
 Outputs:
-    ListApplesApi:
-      Description: "API Gateway endpoint URL for Prod stage for ListApples function"
-      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/apples/"
+  ListApplesApi:
+    Description: "API Gateway endpoint URL for live stage for ListApples function"
+    Value: !Join ['', ['https://', !Ref ApplesApiGateway, '.execute-api.', !Ref 'AWS::Region',  '.amazonaws.com/live/apples' ] ]
 
-    ListApplesFunction:
-      Description: "ListApples Lambda Function ARN"
-      Value: !GetAtt ListApples.Arn
+  ListApplesFunction:
+    Description: "ListApples Lambda Function ARN"
+    Value: !GetAtt ListApples.Arn

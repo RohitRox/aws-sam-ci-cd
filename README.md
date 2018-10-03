@@ -135,4 +135,74 @@ We can design our development flow to use swagger to document our API and also u
 Resource:
 - [About Swagger/ OpenAPI Specification](https://swagger.io/docs/specification/about/)
 
+## Swagger Integration
+
+AWS SAM supports inline as well as external Swagger and some CloudFormation Intrinsic Functions. For real world scenario we probably want to have a separate swagger configuration file.
+
+[Amazon API Gateway Definition](https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi)
+
+Let's first focus on swagger. Once we have a swagger config, we would like to have a UI to see it.
+This one command ```docker run -p 8080:8080 -e "SWAGGER_JSON=/mnt/swagger.yaml" -v `pwd`:/mnt swaggerapi/swagger-ui``` will run a docker container at port 8080 for documentation viewing. This is desired way because all the swagger tools and dependencies are encapsulated inside `swaggerapi/swagger-ui` docker image and we don't any thing related to it in our project. Nice, clean and quick.
+
+Next, the integration with AWS comes with the attribute `x-amazon-apigateway-integration`, which is an AWS-specific extension to Swagger.
+
+[Read on x-amazon-apigateway-integration ](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-as-lambda-proxy-export-swagger-with-extensions.html)
+
+This consists of the configuration that is responsible for mapping and transforming the request and response from the RESTful endpoint to the specified AWS service.
+
+Important properties are:
+ - `uri` specifies which Lambda function shall be invoked.
+
+- `responses` specify rules how to transform the responses returned by the function. As we are using Lambda Proxy Integration, we don’t need any specific rule.
+
+- `type` defines that we want to use Lambda Proxy Integration, and thereby we have to set httpMethod to "POST", as this is what Lambda functions expect.
+
+A simplistic example:
+
+```yaml
+  # template.yaml
+  Resources:
+    ApplesApiGateway:
+      Type: AWS::Serverless::Api
+      Properties:
+        StageName: live
+        DefinitionUri: ./swagger.yaml
+        Variables:
+          ListApplesFunction: !Ref ListApples
+
+    ListApples:
+      Type: AWS::Serverless::Function
+      Properties:
+        Handler: src/list.handler
+        Runtime: nodejs8.10
+        Environment:
+          Variables:
+            PARAM1: VALUE
+        Events:
+          ListApples:
+            Type: Api
+            Properties:
+              RestApiId: !Ref ApplesApiGateway
+              Path: /apples
+              Method: get
+```
+
+```yaml
+  # swagger.yaml
+  paths:
+    /apples:
+      get:
+        summary: Get apples
+        description: Details on getting apples
+        responses: {}
+        x-amazon-apigateway-integration:
+          type: aws_proxy
+          uri: arn:aws:apigateway:<REGION>:lambda:path/2015-03-31/functions/arn:aws:lambda:<REGION>:<ACCOUNT_ID>:function:${stageVariables.ListApplesFunction}/invocations
+          httpMethod: POST
+          responses: {}
+```
+The `REGION` and `ACCOUNT_ID` needs to be hard-coded for now. There are issues in github about this. `${stageVariables.ListApplesFunction}` grabs the function set in the template using `Variables` property in `AWS::Serverless::Api` declaration.
+
+The `x-amazon-apigateway-integration` can be configured to have varioos kinds of checks and validations so that invalid requests can be aborted beforehand before triggering lamda.
+
 

@@ -1,0 +1,30 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: Sam Sample Apples Swagger Spec
+
+host: 127.0.0.1:3000
+
+schemes:
+  - https
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+
+paths:
+  /apples:
+    get:
+      summary: Get apples
+      description: |
+        Details on getting apples
+      responses: {}
+      x-amazon-apigateway-integration:
+        type: aws_proxy
+        uri: arn:aws:apigateway:us-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-west-1:316757257260:function:${stageVariables.ListApplesFunction}/invocations
+        httpMethod: POST
+        responses: {}
+
+
+
