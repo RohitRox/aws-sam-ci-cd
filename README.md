@@ -142,7 +142,7 @@ The earlier sample example works just fine, it automatically creates an API Gate
 
 What might happen in an API Gateway
 
-![API Gateway internals](./doc_assets/api-gateway-internals.png)
+![API Gateway internals](./doc_assets/api-gateway-inner.png)
 
 > We can use OpenAPI Specification formerly known as Swagger Specification to define the API and API Gateway in combination with Lambda to implement the API.
 
