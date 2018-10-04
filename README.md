@@ -23,7 +23,7 @@ Install [AWS SAM Cli](https://github.com/awslabs/aws-sam-cli/blob/develop/docs/i
   $ make server # starts sam local server at port 3000, ref template.yaml for path and function association
   # localhost:3000/apples, observe logs
   $ make swagger # runs swagger ui at 8080
-  $ make deploy # deploys tenmplate.yaml, update `--s3-bucket` and `--stack-name` as required
+  $ make deploy # deploys template.yaml, update `--s3-bucket` and `--stack-name` as required
 
 ```
 
@@ -252,3 +252,12 @@ will actually create a table and attributes. We'll have to write our own script 
 Refer to `dynamo/dbcreate.local.js` to see how table and seed data can be created and this can be invoked via Makefile.
 
 The idea here is to have all dependencies and seed data with minimal effort, not have or have minimal external libraries and a nice defined workflow that can be applied to all projects.
+
+
+## AWS CodePipeline
+
+AWS CodePipeline is a continuous delivery service we can use to model, visualize, and automate the steps required to release our software. We can use cloudformation (also via AWS Console) to actually create the code pipeline and configure codepipeline to deploy our code via cloudformation :trollface:
+
+A basic codepipeline can be illustrated as below.
+
+![image info](./doc_assets/pipeline.png)
