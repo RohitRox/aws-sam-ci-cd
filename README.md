@@ -33,7 +33,8 @@ The AWS Serverless Application Model (AWS SAM) is a model or specifications to d
 
 To create a serverless application using SAM, first, we'll need to create a SAM template which is a configuration file that describes our Lambda functions, API endpoints and the other resources in our application.
 
-SAM templates looks and feels similar to cloudformation templates (actually transforms to a cloudformation template) but simplifies and abstracts the management of serverless resources as illustrated here:
+> SAM templates looks and feels similar to cloudformation templates (actually transforms to a cloudformation template) but simplifies and abstracts the management of serverless resources.
+
 ![A SAM template](https://image.slidesharecdn.com/3-170603004817/95/building-aws-lambda-applications-with-the-aws-serverless-application-model-aws-sam-june-2017-aws-online-tech-talks-16-638.jpg?cb=1496451007 "A SAM template")
 ![SAM template resources](https://image.slidesharecdn.com/srv311-authoring-and-deploying-8533218c-51bf-4889-8f9e-6a3f52380159-1404412007-171213232428/95/authoring-and-deploying-serverless-applications-with-aws-sam-srv311-reinvent-2017-17-638.jpg?cb=1513207484, "SAM template resources")
 
@@ -58,7 +59,8 @@ Usage:
 This generates a fully functional project in `apples` folder along with a sample handler at `/hello` path. A very good README is also generated along the way which contains all documentation about running, testing and deploying. It is highly recommended to go through that and all the documentation embedded the handler code.
 
 `sam local start-api` is the command to get a local server up. This is an ideal way to test our lambda function because it actually mimics the AWS behavior. Behind the scenes, it creates a local HTTP server hosting all of our Lambda functions defined by `template.yaml`. When accessed by using a browser or the CLI, a Docker container is launched on-demand locally to invoke the function.
-SAM tools provide a richer execution environment on our machine than just running Node.js(code) alone.
+
+> SAM tools provide a richer execution environment on our machine than just running the code alone.
 
 The template can be validated using `sam validate -t path/to/template.yaml`.
 There are excellent plugins available for vscode and sublime text for catching template bugs.
@@ -143,7 +145,7 @@ What might happen in an API Gateway
 
 ![API Gateway internals](https://cloudonaut.io/images/2015/11/API-Gateway-Internals.png "API Gateway internals")
 
-We can use OpenAPI Specification formerly known as Swagger Specification to define the API and API Gateway in combination with Lambda to implement the API.
+> We can use OpenAPI Specification formerly known as Swagger Specification to define the API and API Gateway in combination with Lambda to implement the API.
 
 We can design our development flow to use swagger to document our API and also use the same definitions for SAM template. The cool thing about this is that the API definition can be used by the server that implements the API and the clients that use the API.
 
@@ -159,7 +161,7 @@ AWS SAM supports inline as well as external Swagger and some CloudFormation Intr
 Let's first focus on swagger. Once we have a swagger config, we would like to have a UI to see it.
 This one command ```docker run -p 8080:8080 -e "SWAGGER_JSON=/mnt/swagger.yaml" -v `pwd`:/mnt swaggerapi/swagger-ui``` will run a docker container at port 8080 for documentation viewing. This is desired way because all the swagger tools and dependencies are encapsulated inside `swaggerapi/swagger-ui` docker image and we don't any thing related to it in our project. Nice, clean and quick.
 
-Next, the integration with AWS comes with the attribute `x-amazon-apigateway-integration`, which is an AWS-specific extension to Swagger.
+> Next, the integration with AWS comes with the attribute `x-amazon-apigateway-integration`, which is an AWS-specific extension to Swagger.
 
 [Read on x-amazon-apigateway-integration ](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-as-lambda-proxy-export-swagger-with-extensions.html)
 
@@ -222,7 +224,9 @@ The `x-amazon-apigateway-integration` can be configured to have various kinds of
 
 # External AWS Resources
 
-Docker based solutions can be easily integrated with sam cli to create an development environement that needs external resources like DynamoDB. In this project, image `cnadiminti/dynamodb-local` is being used to start a dynamodb server. We just need to make sure that both sam local containers and services runs on the same docker network.
+>Docker based solutions can be easily integrated with sam cli to create an development environement that needs external resources like DynamoDB.
+
+In this project, image `cnadiminti/dynamodb-local` is being used to start a dynamodb server. We just need to make sure that both sam local containers and services runs on the same docker network.
 
 ```bash
   $ docker network ls|grep lambda-local > /dev/null || docker network create lambda-local # only create if does not exist
@@ -247,16 +251,20 @@ Following snippet,
       WriteCapacityUnits: 5
 ```
 
-will actually create a table and attributes. We'll have to write our own script to actually prepare database for us.
+would actually create a table and attributes on AWS. For local, we'll have to write a script.
 
-Refer to `dynamo/dbcreate.local.js` to see how table and seed data can be created and this can be invoked via Makefile.
+Refer to `dynamo/dbcreate.local.js` to see how tables and seeds data can be created and this can be invoked via Makefile.
 
-The idea here is to have all dependencies and seed data with minimal effort, not have or have minimal external libraries and a nice defined workflow that can be applied to all projects.
+> The idea here is to have all dependencies and seed data with minimal effort, not have or have minimal external libraries and a nice defined workflow that can be applied to all projects.
 
 
 ## AWS CodePipeline
 
-AWS CodePipeline is a continuous delivery service we can use to model, visualize, and automate the steps required to release our software. We can use cloudformation (also via AWS Console) to actually create the code pipeline and configure codepipeline to deploy our code via cloudformation :trollface:
+AWS CodePipeline is a continuous delivery service we can use to model, visualize, and automate the steps required to release our software.
+
+> We use cloudformation to build a code pipeline and configure codepipeline to deploy our code via cloudformation :trollface:
+
+Recommended Video [Continuous Integration and Continuous Deployment with AWS Lambda and AWS CodePipeline](https://www.youtube.com/watch?v=P7i01eqmzrs)
 
 A basic codepipeline can be illustrated as below.
 
