@@ -3,7 +3,30 @@ Transform: AWS::Serverless-2016-10-31
 
 Description: Sample SAM Template
 
+Parameters:
+  DynamoDBTableName:
+    Type: String
+    Default: ApplesTable
+
 Resources:
+  DynamoApplesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref DynamoDBTableName
+      AttributeDefinitions:
+      - AttributeName: Location
+        AttributeType: S
+      - AttributeName: AppleId
+        AttributeType: S
+      KeySchema:
+      - AttributeName: Location
+        KeyType: HASH
+      - AttributeName: AppleId
+        KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
   ApplesApiGateway:
     Type: AWS::Serverless::Api
     Properties:
@@ -17,9 +40,10 @@ Resources:
     Properties:
       Handler: src/list.handler
       Runtime: nodejs8.10
+      Policies: AmazonDynamoDBFullAccess
       Environment:
         Variables:
-          PARAM1: VALUE
+          DYNAMODB_TABLE_NAME: !Ref DynamoDBTableName
       Events:
         ListApples:
           Type: Api

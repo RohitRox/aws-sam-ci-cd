@@ -1,22 +1,23 @@
 
-const axios = require('axios')
-const url = 'http://checkip.amazonaws.com/';
 let response;
 
-exports.handler = async (event, context) => {
-  try {
-    const res = await axios(url);
-    response = {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: 'Hello world. I give you a list of apples.',
-        location: res.data.trim()
-      })
-    }
-  } catch (err) {
-    console.log(err);
-    return err;
-  }
+const Dynamo = require('./dynamo');
 
-  return response
+exports.handler = (event, context, callback) =>  {
+  console.log('Dynamo Client: ', Dynamo.client());
+  console.log('Scanning Table:', process.env.DYNAMODB_TABLE_NAME);
+
+  Dynamo.client().scan({ TableName: process.env.DYNAMODB_TABLE_NAME }, (err, data) => {
+    if (err) {
+      console.log('[ERROR]', err, err.stack);
+      callback({ statusCode: 500, body: JSON.stringify(err) });
+    } else {
+      console.log('[INFO]', JSON.stringify(data));
+      response = {
+        message: 'Got some apples for you',
+        data: data.Items
+      }
+      callback(null, { statusCode: 200, body: JSON.stringify(response) });
+    }
+  })
 };

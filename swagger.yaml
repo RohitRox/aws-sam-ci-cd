@@ -22,6 +22,7 @@ paths:
       responses: {}
       x-amazon-apigateway-integration:
         type: aws_proxy
+        passthroughBehavior: when_no_match
         uri: arn:aws:apigateway:us-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-west-1:316757257260:function:${stageVariables.ListApplesFunction}/invocations
         httpMethod: POST
         responses: {}
