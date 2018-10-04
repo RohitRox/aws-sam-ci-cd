@@ -35,8 +35,8 @@ To create a serverless application using SAM, first, we'll need to create a SAM 
 
 > SAM templates looks and feels similar to cloudformation templates (actually transforms to a cloudformation template) but simplifies and abstracts the management of serverless resources.
 
-![A SAM template](https://image.slidesharecdn.com/3-170603004817/95/building-aws-lambda-applications-with-the-aws-serverless-application-model-aws-sam-june-2017-aws-online-tech-talks-16-638.jpg?cb=1496451007 "A SAM template")
-![SAM template resources](https://image.slidesharecdn.com/srv311-authoring-and-deploying-8533218c-51bf-4889-8f9e-6a3f52380159-1404412007-171213232428/95/authoring-and-deploying-serverless-applications-with-aws-sam-srv311-reinvent-2017-17-638.jpg?cb=1513207484, "SAM template resources")
+![A SAM template](./doc_assets/sam-template-1.jpeg)
+![SAM template resources](./doc_assets/sam-template-2.jpeg))
 
 We then test, upload, and deploy application using the [AWS SAM CLI](https://github.com/awslabs/serverless-application-model).
 SAM CLI is an open source tool for managing Serverless applications written with AWS Serverless Application Model which provides an environment for us to develop, test, and analyze our serverless applications locally before uploading them to the Lambda runtime.
@@ -66,7 +66,7 @@ The template can be validated using `sam validate -t path/to/template.yaml`.
 There are excellent plugins available for vscode and sublime text for catching template bugs.
 
 Resources:
-- [SAM Template Doc](https://docs.aws.amazon.com/lambda/latest/dg/serverless_app.html)
+- [SAM Template Docs](https://docs.aws.amazon.com/lambda/latest/dg/serverless_app.html)
 - [More on Testing and Invoking](https://docs.aws.amazon.com/lambda/latest/dg/test-sam-cli.html)
 
 ## Code Organization
@@ -112,7 +112,6 @@ S3 bucket can be quickly created by:
 
 ```bash
   $ aws cloudformation package --template-file template.yaml --s3-bucket lambda-deploy-pkgs --output-template-file template-out.yaml --profile aws-profile
-
 ```
 
 This transforms and creates a template named `template-out.yaml` that contains the CodeUri that points to the deployment zip in the Amazon S3 bucket that we specified and this template represents our serverless application. We are now ready to deploy it.
@@ -135,7 +134,7 @@ SAM CLI now comes with commands for deployment as well.
   $ sam logs -n MyFunction --stack-name mystack # fetch logs using the function's LogicalID
 ```
 
-[Full Doc](https://docs.aws.amazon.com/lambda/latest/dg/test-sam-cli.html)
+[Full Docs](https://docs.aws.amazon.com/lambda/latest/dg/test-sam-cli.html)
 
 ## API Gateway And Swagger/ OpenAPI Specification
 
@@ -143,7 +142,7 @@ The earlier sample example works just fine, it automatically creates an API Gate
 
 What might happen in an API Gateway
 
-![API Gateway internals](https://cloudonaut.io/images/2015/11/API-Gateway-Internals.png "API Gateway internals")
+![API Gateway internals](./doc_assets/api-gateway-internals.png)
 
 > We can use OpenAPI Specification formerly known as Swagger Specification to define the API and API Gateway in combination with Lambda to implement the API.
 
@@ -156,7 +155,7 @@ Resource:
 
 AWS SAM supports inline as well as external Swagger and some CloudFormation Intrinsic Functions. For real world scenario we probably want to have a separate swagger configuration file.
 
-[Amazon API Gateway Definition](https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi)
+[Read on Amazon API Gateway Definition](https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi)
 
 Let's first focus on swagger. Once we have a swagger config, we would like to have a UI to see it.
 This one command ```docker run -p 8080:8080 -e "SWAGGER_JSON=/mnt/swagger.yaml" -v `pwd`:/mnt swaggerapi/swagger-ui``` will run a docker container at port 8080 for documentation viewing. This is desired way because all the swagger tools and dependencies are encapsulated inside `swaggerapi/swagger-ui` docker image and we don't any thing related to it in our project. Nice, clean and quick.
