@@ -51,9 +51,8 @@ Get the tool: [Installation Guide](https://github.com/awslabs/aws-sam-cli/blob/d
 
 Usage:
 
-```
+```bash
   $ sam init --runtime  nodejs8.10 --name apples
-
 ```
 
 This generates a fully functional project in `apples` folder along with a sample handler at `/hello` path. A very good README is also generated along the way which contains all documentation about running, testing and deploying. It is highly recommended to go through that and all the documentation embedded the handler code.
@@ -219,16 +218,16 @@ A simplistic example:
 ```
 The `REGION` and `ACCOUNT_ID` needs to be hard-coded for now. There are issues in github about this. `${stageVariables.ListApplesFunction}` grabs the function set in the template using `Variables` property in `AWS::Serverless::Api` declaration.
 
-The `x-amazon-apigateway-integration` can be configured to have various kinds of checks and validations so that invalid requests can be aborted beforehand before triggering lamda.
+The `x-amazon-apigateway-integration` can be configured to have various kinds of checks and validations so that invalid requests can be aborted beforehand before triggering lambda.
 
 # External AWS Resources
 
 Docker based solutions can be easily integrated with sam cli to create an development environement that needs external resources like DynamoDB. In this project, image `cnadiminti/dynamodb-local` is being used to start a dynamodb server. We just need to make sure that both sam local containers and services runs on the same docker network.
 
-```
-  docker network ls|grep lambda-local > /dev/null || docker network create lambda-local # only create if does not exist
-  docker run -d -v `pwd`:/dynamodb_local_db -p 8000:8000 --network lambda-local --name dynamodb cnadiminti/dynamodb-local
-	sam local start-api --docker-network lambda-local
+```bash
+  $ docker network ls|grep lambda-local > /dev/null || docker network create lambda-local # only create if does not exist
+  $ docker run -d -v `pwd`:/dynamodb_local_db -p 8000:8000 --network lambda-local --name dynamodb cnadiminti/dynamodb-local
+  $ sam local start-api --docker-network lambda-local
 ```
 
 This can be nicely organized in a Makefile.
@@ -250,6 +249,6 @@ Following snippet,
 
 will actually create a table and attributes. We'll have to write our own script to actually prepare database for us.
 
-Refer to `dynamo/dbcreate/local.js` to see how table and seed data can be created and this can be invoked via Makefile.
+Refer to `dynamo/dbcreate.local.js` to see how table and seed data can be created and this can be invoked via Makefile.
 
 The idea here is to have all dependencies and seed data with minimal effort, not have or have minimal external libraries and a nice defined workflow that can be applied to all projects.
