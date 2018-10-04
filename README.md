@@ -12,6 +12,21 @@ Topics:
 - CI/CD with AWS CodePipeline
 - Safe AWS Lambda deployment strategies
 
+## Quick Start
+
+Install [AWS SAM Cli](https://github.com/awslabs/aws-sam-cli/blob/develop/docs/installation.rst)
+
+```bash
+  $ nvm use && npm install # use correct node version and install nodejs dependencies
+  $ make dynamo # start dynamo container in the background
+  $ make dbcreate # create seed dynamobn tables and records
+  $ make server # starts sam local server at port 3000, ref template.yaml for path and function association
+  # localhost:3000/apples, observe logs
+  $ make swagger # runs swagger ui at 8080
+  $ make deploy # deploys tenmplate.yaml, update `--s3-bucket` and `--stack-name` as required
+
+```
+
 ## AWS SAM
 
 The AWS Serverless Application Model (AWS SAM) is a model or specifications to define serverless applications on AWS. This model allows us to create and manage resources used in our application using AWS CloudFormation.

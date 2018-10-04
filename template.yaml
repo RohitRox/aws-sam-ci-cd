@@ -41,6 +41,7 @@ Resources:
       Handler: src/list.handler
       Runtime: nodejs8.10
       Policies: AmazonDynamoDBFullAccess
+      Timeout: 5
       Environment:
         Variables:
           DYNAMODB_TABLE_NAME: !Ref DynamoDBTableName
